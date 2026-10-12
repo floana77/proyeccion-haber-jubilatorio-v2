@@ -19,5 +19,8 @@ export function crearMockInterceptor(rutas: MockRuta[], leerEscenario: () => Esc
   };
 }
 
-/** Interceptor de mocks de la app. Solo se registra si environment.usarMocks es true. */
-export const mockInterceptor = crearMockInterceptor(MOCK_RUTAS, escenarioDeLaUrl);
+/**
+ * Interceptor de mocks de la app. Solo se registra si environment.usarMocks es true.
+ * El @__PURE__ permite que el build de producción lo elimine junto con los datos mock.
+ */
+export const mockInterceptor = /* @__PURE__ */ crearMockInterceptor(MOCK_RUTAS, escenarioDeLaUrl);
