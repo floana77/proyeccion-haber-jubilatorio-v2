@@ -1,6 +1,6 @@
 # Avance del desarrollo — Proyección de haber jubilatorio (v2)
 
-Fecha de corte: 12/10/2026 · Último commit: `6422dc9`
+Fecha de corte: 12/10/2026 · Último commit: `168bab7`
 
 ## Resumen
 
@@ -26,13 +26,7 @@ Están hechas las tres funcionalidades core del [PRD](PRD-001-proyeccion-haber-j
 | **Cierre** | | | |
 | 4.1 | Estilos de la Opción A, responsive de 360 a 1920 px y accesibilidad (texto de 18 px, botones de 44 px, contraste) | ✅ | `6422dc9` |
 
-Commits fuera del plan:
-
-- `ef62413`: aclaración en el PRD sobre el afiliado fallecido.
-- `a42f5ca`: carpeta `docs/`.
-- `edfb079`: imágenes de diseño.
-- `1b57489` y `d07f324`: arreglos para que los datos simulados no lleguen a producción.
-- `6680fe4`: analytics de Angular CLI desactivado.
+Fuera del plan hubo commits de documentación (PRD, README, contrato de la API), las imágenes de diseño, la configuración de Angular CLI y dos arreglos para que los datos simulados no lleguen a producción (`1b57489`, `d07f324`).
 
 ## Decisiones tomadas durante el desarrollo
 
@@ -75,6 +69,8 @@ Commits fuera del plan:
 npm start   # http://localhost:4200
 ```
 
+El recorrido para mostrarlo está en el [guion de la demo](guion-demo.md).
+
 Para elegir el escenario simulado se agrega `?escenario=...` a la URL:
 
 | Escenario | Qué muestra |
@@ -92,13 +88,7 @@ Para elegir el escenario simulado se agrega `?escenario=...` a la URL:
 | `proyeccion-error` | El servicio de proyección da error |
 | `proyeccion-sin-respuesta` | El servicio no responde: el error aparece a los 10 s |
 
-### Tests en WSL
-
-WSL no tiene Chrome instalado. Hay que indicar un Chrome con `CHROME_BIN`:
-
-```bash
-CHROME_BIN=/ruta/a/chrome npx ng test --watch=false --browsers=ChromeHeadless
-```
+Para correr los tests, ver el [README](../README.md#tests).
 
 ## Próximo paso
 
