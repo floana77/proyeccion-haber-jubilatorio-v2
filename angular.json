@@ -57,7 +57,34 @@
                   "maximumError": "4kB"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ]
+            },
+            "qa": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "1MB",
+                  "maximumError": "2MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2kB",
+                  "maximumError": "4kB"
+                }
+              ],
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.qa.ts"
+                }
+              ]
             },
             "development": {
               "optimization": false,
@@ -75,6 +102,9 @@
           "configurations": {
             "production": {
               "buildTarget": "proyeccion-haber-jubilatorio:build:production"
+            },
+            "qa": {
+              "buildTarget": "proyeccion-haber-jubilatorio:build:qa"
             },
             "development": {
               "buildTarget": "proyeccion-haber-jubilatorio:build:development"
