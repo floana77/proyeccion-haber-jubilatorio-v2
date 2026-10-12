@@ -1,10 +1,10 @@
 # Avance del desarrollo — Proyección de haber jubilatorio (v2)
 
-Fecha de corte: 12/10/2026 · Último commit: `4bd1562`
+Fecha de corte: 12/10/2026 · Último commit: `6422dc9`
 
 ## Resumen
 
-Están hechas las tres funcionalidades core del [PRD](PRD-001-proyeccion-haber-jubilatorio.md). Llevamos **9 de 10 pasos** del plan. Falta el paso 4.1: los estilos de la Opción A, el responsive y la accesibilidad. Hay 81 tests unitarios y todos pasan, en UTC y en hora de Buenos Aires.
+Están hechas las tres funcionalidades core del [PRD](PRD-001-proyeccion-haber-jubilatorio.md) y los **10 pasos** del plan, incluidos los estilos de la Opción A, el responsive y la accesibilidad. Hay 81 tests unitarios y todos pasan, en UTC y en hora de Buenos Aires.
 
 ## Plan y estado
 
@@ -24,7 +24,7 @@ Están hechas las tres funcionalidades core del [PRD](PRD-001-proyeccion-haber-j
 | 3.1 | Servicio de proyección con límite de 10 s, y PDF, error y demora simulados | ✅ | `0abdd76` |
 | 3.2 | Botón Proyectar: pestaña nueva, carga, sin doble clic, error y reintento (AC-15 a 19) | ✅ | `4bd1562` |
 | **Cierre** | | | |
-| 4.1 | Estilos de la Opción A, responsive de 360 a 1920 px y accesibilidad (texto de 18 px, botones de 44 px, contraste) | ⏳ Falta | — |
+| 4.1 | Estilos de la Opción A, responsive de 360 a 1920 px y accesibilidad (texto de 18 px, botones de 44 px, contraste) | ✅ | `6422dc9` |
 
 Commits fuera del plan:
 
@@ -47,6 +47,13 @@ Commits fuera del plan:
 - **En condiciones de jubilarse:** las opciones de beneficio y el calendario se ven, pero deshabilitados.
 - **Error al cargar los datos:** se muestra "No pudimos cargar tus datos" con un botón Reintentar.
 - **Pestaña del PDF:** se abre en el mismo clic, con el texto "Generando su proyección…", y el PDF se carga cuando llega. Se hace así para que Safari en iPhone no la bloquee. Si hay un error, la pestaña se cierra.
+- **Estilos (paso 4.1):**
+  - Tema `lara-light-green` de PrimeNG con los colores de la Opción A sobrescritos en `src/styles.scss`.
+  - Tipografías Lora (título) y Work Sans (texto), instaladas con npm (`@fontsource`), sin pedir nada a Google.
+  - `html` mide 18 px, así que todo lo que está en `rem` escala con el texto base.
+  - El verde del chip ACTIVO es más oscuro que en el diseño para llegar al contraste de 4,5:1.
+  - La descripción de cada beneficio y la ayuda de la fecha miden 16 px, como texto secundario.
+- **Celular (menos de 768 px):** para que Proyectar se vea sin scroll en 360×640 (AC-22), se ocultan el texto de introducción y la descripción de cada beneficio, y se achican el título y los espacios. Cada opción sigue mostrando su nombre y su fecha mínima.
 - **Producción sin datos simulados:** el build de prod cambia `src/app/mocks/interceptores-mock.ts` por una lista vacía (`fileReplacements` en `angular.json`). Para verificarlo, se busca `en-condiciones-hoy` en `build_package/main.*.js`: tiene que haber 0 resultados.
 
 ## Pendientes fuera del plan
@@ -58,7 +65,9 @@ Commits fuera del plan:
 | AC-16 | Probar en dispositivos reales: Chrome en Android y Safari en iPhone |
 | AC-15 completo | Comparar el PDF con el del sitio actual, con el backend real |
 | Tiempo máximo de 10 s (RF-10) | El PRD lo marca "a validar". Está en `TIEMPO_MAXIMO_PROYECCION_MS` |
-| Tamaño de producción | La carga inicial es de 991 kB y el aviso salta en 1 MB. Se revisa en el paso 4.1 |
+| Tamaño de producción | La carga inicial es de 989 kB y el aviso salta en 1 MB. Cualquier librería nueva lo va a pasar |
+| AC-22, AC-23 y AC-24 | Se verificaron en Chrome headless (tamaños de AC-22, axe y medidas de áreas táctiles). Falta probar en los 5 navegadores de RNF-05 y en dispositivos reales |
+| Usabilidad | Prueba con afiliados de 60 años o más antes del release (riesgos del PRD) |
 
 ## Cómo probar
 
@@ -93,4 +102,4 @@ CHROME_BIN=/ruta/a/chrome npx ng test --watch=false --browsers=ChromeHeadless
 
 ## Próximo paso
 
-**Paso 4.1:** estilos de la Opción A (colores, tipografías y tarjetas como en `docs/diseno/`), responsive de 360 a 1920 px y accesibilidad (texto de 18 px, botones de 44 px y contraste). Antes de empezar, se arma el plan y se aprueba.
+El plan está completo. Quedan los pendientes de arriba, que dependen de datos o pruebas fuera del código.
