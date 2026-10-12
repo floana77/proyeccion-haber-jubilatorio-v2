@@ -10,7 +10,8 @@ export interface SeleccionBeneficio {
   fecha: string;
 }
 
-function fechaMinima(fechas: FechasMinimas, tipoBeneficio: TipoBeneficio): string {
+/** Fecha mínima del beneficio, en formato AAAA-MM-DD. */
+export function fechaMinima(fechas: FechasMinimas, tipoBeneficio: TipoBeneficio): string {
   return tipoBeneficio === 'ORDINARIA' ? fechas.ordinaria : fechas.parcial;
 }
 

@@ -37,29 +37,78 @@
         }
 
         @if (datos.fechas; as fechas) {
-          <div>
-            <h2 class="text-lg mt-0 mb-3">Tipo de beneficio</h2>
-            <ul class="list-none p-0 m-0 flex flex-column gap-3">
-              <li data-testid="beneficio-ordinaria" class="border-1 surface-border border-round-lg p-3">
-                <div class="font-bold">Jubilación Ordinaria</div>
-                <div class="text-color-secondary">El beneficio completo, a partir de tu fecha mínima.</div>
-                <div class="mt-2">
-                  Fecha mínima:
-                  <strong data-testid="fecha-ordinaria">{{ parsearFecha(fechas.ordinaria) | date: 'dd/MM/yyyy' }}</strong>
-                </div>
-              </li>
-              <li data-testid="beneficio-parcial" class="border-1 surface-border border-round-lg p-3">
-                <div class="font-bold">Jubilación Parcial</div>
-                <div class="text-color-secondary">
-                  Combina actividad reducida con un haber proporcional. Su fecha mínima puede ser distinta a la de
-                  la jubilación ordinaria.
-                </div>
-                <div class="mt-2">
-                  Fecha mínima:
-                  <strong data-testid="fecha-parcial">{{ parsearFecha(fechas.parcial) | date: 'dd/MM/yyyy' }}</strong>
-                </div>
-              </li>
-            </ul>
+          @let seleccionActual = seleccion();
+          @let bloqueado = !datos.estado.puedeProyectar;
+
+          <fieldset class="border-none p-0 m-0">
+            <legend class="text-lg font-bold mb-3">Tipo de beneficio</legend>
+            <div class="flex flex-column gap-3">
+              <label
+                data-testid="beneficio-ordinaria"
+                for="beneficio-ordinaria"
+                class="opcion flex gap-3 align-items-start border-1 surface-border border-round-lg p-3"
+                [class.opcion-elegida]="seleccionActual?.tipoBeneficio === 'ORDINARIA'"
+                [class.opcion-bloqueada]="bloqueado">
+                <p-radioButton
+                  inputId="beneficio-ordinaria"
+                  name="tipoBeneficio"
+                  value="ORDINARIA"
+                  [disabled]="bloqueado"
+                  [ngModel]="seleccionActual?.tipoBeneficio"
+                  (ngModelChange)="elegirBeneficio($event)" />
+                <span>
+                  <span class="block font-bold">Jubilación Ordinaria</span>
+                  <span class="block text-color-secondary">El beneficio completo, a partir de tu fecha mínima.</span>
+                  <span class="block mt-2">
+                    Fecha mínima:
+                    <strong data-testid="fecha-ordinaria">{{ parsearFecha(fechas.ordinaria) | date: 'dd/MM/yyyy' }}</strong>
+                  </span>
+                </span>
+              </label>
+              <label
+                data-testid="beneficio-parcial"
+                for="beneficio-parcial"
+                class="opcion flex gap-3 align-items-start border-1 surface-border border-round-lg p-3"
+                [class.opcion-elegida]="seleccionActual?.tipoBeneficio === 'PARCIAL'"
+                [class.opcion-bloqueada]="bloqueado">
+                <p-radioButton
+                  inputId="beneficio-parcial"
+                  name="tipoBeneficio"
+                  value="PARCIAL"
+                  [disabled]="bloqueado"
+                  [ngModel]="seleccionActual?.tipoBeneficio"
+                  (ngModelChange)="elegirBeneficio($event)" />
+                <span>
+                  <span class="block font-bold">Jubilación Parcial</span>
+                  <span class="block text-color-secondary">
+                    Combina actividad reducida con un haber proporcional. Su fecha mínima puede ser distinta a la de
+                    la jubilación ordinaria.
+                  </span>
+                  <span class="block mt-2">
+                    Fecha mínima:
+                    <strong data-testid="fecha-parcial">{{ parsearFecha(fechas.parcial) | date: 'dd/MM/yyyy' }}</strong>
+                  </span>
+                </span>
+              </label>
+            </div>
+          </fieldset>
+
+          <div class="flex flex-column gap-2">
+            <label for="fecha-proyeccion" class="text-lg font-bold">Fecha para tu proyección</label>
+            <!-- RF-04: solo desde el calendario, sin escribir, y sin días anteriores a la mínima. -->
+            <p-calendar
+              data-testid="fecha-proyeccion"
+              inputId="fecha-proyeccion"
+              dateFormat="dd/mm/yy"
+              [readonlyInput]="true"
+              [showIcon]="true"
+              [disabled]="bloqueado"
+              [minDate]="fechaMinimaElegida()"
+              [ngModel]="fechaElegida()"
+              (ngModelChange)="elegirFecha($event)" />
+            <small id="fecha-proyeccion-ayuda" data-testid="ayuda-fecha" class="text-color-secondary">
+              No puede ser anterior al {{ fechaMinimaElegida() | date: 'dd/MM/yyyy' }} para el beneficio elegido.
+            </small>
           </div>
         }
 

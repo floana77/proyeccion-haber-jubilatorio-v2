@@ -1,6 +1,8 @@
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
+import { Calendar } from 'primeng/calendar';
 
 import { environment } from '../../environments/environment';
 import { AfiliadoService } from '../afiliado/afiliado.service';
@@ -16,6 +18,12 @@ const DEMORA_CARGA_MS = 600;
 function fechaEnPantalla(desplazamiento: { anios?: number; dias?: number }): string {
   const [anio, mes, dia] = fechaRelativa(desplazamiento).split('-');
   return `${dia}/${mes}/${anio}`;
+}
+
+/** Desplazamiento respecto de hoy, como Date a las 00:00. */
+function fechaDesde(desplazamiento: { anios?: number; dias?: number }): Date {
+  const [anio, mes, dia] = fechaRelativa(desplazamiento).split('-').map(Number);
+  return new Date(anio, mes - 1, dia);
 }
 
 class Pantalla {
@@ -36,6 +44,37 @@ class Pantalla {
   boton(testId: string): HTMLButtonElement {
     return this.raiz.querySelector(`[data-testid="${testId}"] button`) as HTMLButtonElement;
   }
+
+  /** Input de la opción de beneficio: 'beneficio-ordinaria' o 'beneficio-parcial'. */
+  opcion(id: string): HTMLInputElement {
+    return this.raiz.querySelector(`input#${id}`) as HTMLInputElement;
+  }
+
+  get inputFecha(): HTMLInputElement {
+    return this.raiz.querySelector('input#fecha-proyeccion') as HTMLInputElement;
+  }
+
+  get calendario(): Calendar {
+    return this.fixture.debugElement.query(By.directive(Calendar)).componentInstance as Calendar;
+  }
+
+  elegirOpcion(id: string): void {
+    this.opcion(id).click();
+    this.actualizar();
+  }
+
+  /** Simula elegir un día en el calendario abierto. */
+  elegirFecha(fecha: Date): void {
+    this.calendario.updateModel(fecha);
+    this.actualizar();
+  }
+
+  /** ngModel escribe en los campos en una microtarea: hay que esperarla (dentro de fakeAsync). */
+  actualizar(): void {
+    this.fixture.detectChanges();
+    tick();
+    this.fixture.detectChanges();
+  }
 }
 
 describe('ProyeccionComponent con el interceptor de mocks', () => {
@@ -52,8 +91,9 @@ describe('ProyeccionComponent con el interceptor de mocks', () => {
     const fixture = TestBed.createComponent(ProyeccionComponent);
     fixture.detectChanges();
     tick(DEMORA_CARGA_MS);
-    fixture.detectChanges();
-    return new Pantalla(fixture);
+    const pantalla = new Pantalla(fixture);
+    pantalla.actualizar();
+    return pantalla;
   }
 
   it('AC-01: muestra las fechas mínimas de cada beneficio', fakeAsync(() => {
@@ -119,6 +159,83 @@ describe('ProyeccionComponent con el interceptor de mocks', () => {
       expect(pantalla.boton('proyectar').disabled).toBeFalse();
     }));
   }
+
+  describe('selector de beneficio y calendario', () => {
+    it('AC-06: con Parcial antes que Ordinaria preselecciona Parcial con su fecha', fakeAsync(() => {
+      const pantalla = ingresar('normal');
+
+      expect(pantalla.opcion('beneficio-parcial').checked).toBeTrue();
+      expect(pantalla.opcion('beneficio-ordinaria').checked).toBeFalse();
+      expect(pantalla.inputFecha.value).toBe(fechaEnPantalla({ anios: 1 }));
+    }));
+
+    it('AC-07: con las dos fechas iguales preselecciona Ordinaria', fakeAsync(() => {
+      const pantalla = ingresar('fechas-iguales');
+
+      expect(pantalla.opcion('beneficio-ordinaria').checked).toBeTrue();
+      expect(pantalla.inputFecha.value).toBe(fechaEnPantalla({ anios: 5 }));
+    }));
+
+    it('AC-08: con Parcial anterior a hoy preselecciona Parcial con esa fecha', fakeAsync(() => {
+      const pantalla = ingresar('parcial-vencida');
+
+      expect(pantalla.opcion('beneficio-parcial').checked).toBeTrue();
+      expect(pantalla.inputFecha.value).toBe(fechaEnPantalla({ anios: -1 }));
+    }));
+
+    it('AC-09: al cambiar a Ordinaria, la fecha elegida pasa a ser la mínima de Ordinaria', fakeAsync(() => {
+      const pantalla = ingresar('normal');
+      pantalla.elegirFecha(fechaDesde({ anios: 2 }));
+      expect(pantalla.inputFecha.value).toBe(fechaEnPantalla({ anios: 2 }));
+
+      pantalla.elegirOpcion('beneficio-ordinaria');
+
+      expect(pantalla.opcion('beneficio-ordinaria').checked).toBeTrue();
+      expect(pantalla.inputFecha.value).toBe(fechaEnPantalla({ anios: 5 }));
+      expect(pantalla.texto('ayuda-fecha')).toContain(fechaEnPantalla({ anios: 5 }));
+    }));
+
+    it('AC-10: permite elegir en el calendario la fecha mínima más un año', fakeAsync(() => {
+      const pantalla = ingresar('normal');
+
+      pantalla.elegirFecha(fechaDesde({ anios: 2 }));
+
+      expect(pantalla.inputFecha.value).toBe(fechaEnPantalla({ anios: 2 }));
+      expect(pantalla.opcion('beneficio-parcial').checked).toBeTrue();
+    }));
+
+    it('AC-11: habilita el día de la fecha mínima y deshabilita el anterior', fakeAsync(() => {
+      const pantalla = ingresar('normal');
+      const minima = fechaDesde({ anios: 1 });
+      const anterior = fechaDesde({ anios: 1, dias: -1 });
+      const seleccionable = (d: Date) =>
+        pantalla.calendario.isSelectable(d.getDate(), d.getMonth(), d.getFullYear(), false);
+
+      expect(seleccionable(minima)).toBeTrue();
+      expect(seleccionable(anterior)).toBeFalse();
+      expect(pantalla.texto('ayuda-fecha')).toBe(
+        `No puede ser anterior al ${fechaEnPantalla({ anios: 1 })} para el beneficio elegido.`
+      );
+    }));
+
+    it('AC-12: el campo de fecha no se puede escribir', fakeAsync(() => {
+      const pantalla = ingresar('normal');
+
+      expect(pantalla.inputFecha.readOnly).toBeTrue();
+    }));
+
+    it('en condiciones de jubilarse muestra las opciones y el calendario deshabilitados', fakeAsync(() => {
+      const pantalla = ingresar('en-condiciones-hoy');
+
+      expect(pantalla.opcion('beneficio-ordinaria').disabled).toBeTrue();
+      expect(pantalla.opcion('beneficio-parcial').disabled).toBeTrue();
+      expect(pantalla.inputFecha.disabled).toBeTrue();
+    }));
+
+    it('el fallecido no ve el calendario', fakeAsync(() => {
+      expect(ingresar('fallecido').existe('fecha-proyeccion')).toBeFalse();
+    }));
+  });
 });
 
 describe('ProyeccionComponent cuando falla la carga', () => {

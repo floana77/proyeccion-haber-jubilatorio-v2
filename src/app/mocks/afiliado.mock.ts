@@ -2,6 +2,7 @@ import { HttpResponse } from '@angular/common/http';
 import { delay, of } from 'rxjs';
 
 import { Afiliado, EstadoMatricula, FechasMinimas } from '../afiliado/afiliado.model';
+import { formatearFecha } from '../shared/fechas';
 import { Escenario, ESCENARIO_POR_DEFECTO, MockRuta } from './mock.model';
 
 /** Demora simulada de la red, en milisegundos. */
@@ -51,10 +52,7 @@ function datosDe(escenario: Escenario): DatosEscenario {
 
 /** Fecha de hoy desplazada, en formato AAAA-MM-DD según la hora local. */
 export function fechaRelativa({ anios = 0, dias = 0 }: Desplazamiento, hoy = new Date()): string {
-  const fecha = new Date(hoy.getFullYear() + anios, hoy.getMonth(), hoy.getDate() + dias);
-  const mes = String(fecha.getMonth() + 1).padStart(2, '0');
-  const dia = String(fecha.getDate()).padStart(2, '0');
-  return `${fecha.getFullYear()}-${mes}-${dia}`;
+  return formatearFecha(new Date(hoy.getFullYear() + anios, hoy.getMonth(), hoy.getDate() + dias));
 }
 
 export function mockAfiliado(escenario: Escenario): Afiliado {
