@@ -24,11 +24,11 @@
 ---
 
 ## 3. Requerimientos Funcionales
-- **RF-01:** El sistema debe obtener del servicio backend actual las fechas mínimas de jubilación del profesional para Jubilación Ordinaria y Jubilación Parcial al ingresar al módulo.
+- **RF-01:** El sistema debe obtener del servicio backend actual las fechas mínimas de jubilación del profesional para Jubilación Ordinaria y Jubilación Parcial al ingresar al módulo, salvo que el afiliado sea fallecido (RF-05).
 - **RF-02:** El sistema debe mostrar un botón con el texto "Inicie su trámite de jubilación aquí" si al menos una de las dos fechas mínimas de jubilación es menor o igual a hoy.
 - **RF-03:** El sistema debe permitir cambiar el tipo de beneficio propuesto entre Jubilación Ordinaria y Jubilación Parcial y, al cambiarlo, reemplazar la fecha de jubilación elegida por la fecha mínima del nuevo beneficio.
 - **RF-04:** El sistema debe permitir elegir la fecha de jubilación solo desde un selector de fecha, sin ingreso manual, con los días anteriores a la fecha mínima del beneficio elegido deshabilitados.
-- **RF-05:** El sistema debe mostrar la alerta "No es posible realizar proyección para afiliados con estado matricular fallecido" y deshabilitar el botón **Proyectar** si el estado de la matrícula del afiliado es "fallecido". Los estados "activa", "cancelado" y "suspendido" permiten proyectar.
+- **RF-05:** El sistema debe mostrar la alerta "No es posible realizar proyección para afiliados con estado matricular fallecido" y deshabilitar el botón **Proyectar** si el estado de la matrícula del afiliado es "fallecido". En ese caso no se consultan ni se evalúan las fechas mínimas: solo se muestra esa alerta, sin la alerta de RF-11 ni el botón de RF-02. Los estados "activa", "cancelado" y "suspendido" permiten proyectar.
 - **RF-06:** El sistema debe mostrar el botón **Proyectar**, que genera el reporte de la proyección con el tipo de beneficio y la fecha de jubilación elegidos.
 - **RF-07:** El sistema debe preseleccionar el tipo de beneficio con la menor fecha mínima de jubilación, junto con esa fecha mínima, aunque sea anterior a hoy. Si las fechas mínimas de Jubilación Ordinaria y Jubilación Parcial son iguales, debe preseleccionar Jubilación Ordinaria.
 - **RF-08:** El sistema debe mostrar el reporte de la proyección en formato PDF. En navegadores de escritorio debe abrirlo en una nueva pestaña. En dispositivos móviles debe abrirlo en una nueva pestaña o en el visor de PDF del dispositivo.
@@ -62,7 +62,7 @@
 - **AC-10 (RF-12):** Dado un afiliado con la fecha mínima F preseleccionada, cuando elige en el selector la fecha F + 1 año, entonces la fecha elegida es F + 1 año.
 - **AC-11 (RF-04):** Dado un beneficio elegido con fecha mínima F, cuando el afiliado abre el selector de fecha, entonces el día F está habilitado y el día F − 1 está deshabilitado.
 - **AC-12 (RF-04):** Dado el selector de fecha, cuando el afiliado intenta escribir una fecha con el teclado, entonces la fecha elegida no cambia.
-- **AC-13 (RF-05):** Dado un afiliado con estado de matrícula "fallecido", cuando ingresa al módulo, entonces se muestra la alerta "No es posible realizar proyección para afiliados con estado matricular fallecido" y el botón **Proyectar** está deshabilitado.
+- **AC-13 (RF-05):** Dado un afiliado con estado de matrícula "fallecido", cuando ingresa al módulo, entonces se muestra la alerta "No es posible realizar proyección para afiliados con estado matricular fallecido", el botón **Proyectar** está deshabilitado y, aunque sus dos fechas mínimas sean anteriores a hoy, no se muestran la alerta "Ud. se encuentra en condiciones de jubilarse" ni el botón "Inicie su trámite de jubilación aquí".
 - **AC-14 (RF-05):** Dado un afiliado con estado "activa", "cancelado" o "suspendido" (una prueba por estado) y las dos fechas mínimas posteriores a hoy, cuando ingresa al módulo, entonces no se muestra la alerta de fallecido y el botón **Proyectar** está habilitado.
 - **AC-15 (RF-06, RF-08):** Dado un afiliado con estado "activa" que eligió el beneficio B y la fecha D, cuando hace clic en **Proyectar** en un navegador de escritorio, entonces el PDF se abre en una nueva pestaña, muestra el beneficio B y la fecha D, y contiene los mismos datos que el PDF que genera el sitio actual para el mismo afiliado, beneficio y fecha.
 - **AC-16 (RF-08):** Dado el mismo afiliado de AC-15, cuando hace clic en **Proyectar** en Chrome en Android o en Safari en iOS, entonces el PDF se abre en una nueva pestaña o en el visor de PDF del dispositivo, y no queda solo como descarga.

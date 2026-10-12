@@ -124,6 +124,17 @@ Característica: Proyección de haber jubilatorio
     Entonces se muestra la alerta "No es posible realizar proyección para afiliados con estado matricular fallecido"
     Y el botón "Proyectar" está deshabilitado
 
+  @AC-13 @RF-05
+  Escenario: Afiliado fallecido con fechas mínimas alcanzadas solo ve la alerta de fallecido
+    Dado que el estado de matrícula del afiliado es "fallecido"
+    Y que la fecha mínima de Jubilación Parcial es hoy - 1 año
+    Y que la fecha mínima de Jubilación Ordinaria es hoy - 1 día
+    Cuando ingresa al módulo de proyección
+    Entonces se muestra la alerta "No es posible realizar proyección para afiliados con estado matricular fallecido"
+    Y no se muestra la alerta "Ud. se encuentra en condiciones de jubilarse"
+    Y no se muestra el botón "Inicie su trámite de jubilación aquí"
+    Y el botón "Proyectar" está deshabilitado
+
   @AC-14 @RF-05
   Esquema del escenario: Los demás estados de matrícula pueden proyectar
     Dado que el estado de matrícula del afiliado es "<estado>"
