@@ -4,14 +4,15 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { PrimeNGConfig } from 'primeng/api';
 
 import { environment } from '../environments/environment';
-import { mockInterceptor } from './mocks/mock.interceptor';
+import { INTERCEPTORES_MOCK } from './mocks/interceptores-mock';
 import { PRIMENG_ES } from './shared/primeng-es';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
-    // Los mocks solo se registran en dev y QA; en producción usarMocks es false.
-    provideHttpClient(withInterceptors(environment.usarMocks ? [mockInterceptor] : [])),
+    // Los mocks solo se registran en dev y QA. En producción usarMocks es false y,
+    // además, interceptores-mock.ts se reemplaza por una lista vacía (angular.json).
+    provideHttpClient(withInterceptors(environment.usarMocks ? INTERCEPTORES_MOCK : [])),
     // PrimeNG usa animaciones de Angular en varios componentes.
     provideAnimations(),
     // Calendario y demás componentes de PrimeNG en español.
