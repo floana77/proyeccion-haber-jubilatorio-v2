@@ -18,13 +18,21 @@ function alcanzada(fechaIso: string, hoy: Date): boolean {
   return parsearFecha(fechaIso) <= inicioDelDia(hoy);
 }
 
+/** RF-05: el afiliado fallecido solo ve su alerta y no puede proyectar. */
+export const ESTADO_FALLECIDO: EstadoAfiliado = {
+  fallecido: true,
+  enCondicionesDeJubilarse: false,
+  mostrarBotonTramite: false,
+  puedeProyectar: false
+};
+
 /**
  * Si el afiliado es fallecido no se miran las fechas: no puede usar la
  * funcionalidad y solo se muestra la alerta de fallecido.
  */
 export function evaluarEstadoAfiliado(afiliado: Afiliado, fechas: FechasMinimas, hoy = new Date()): EstadoAfiliado {
   if (afiliado.estadoMatricula === 'fallecido') {
-    return { fallecido: true, enCondicionesDeJubilarse: false, mostrarBotonTramite: false, puedeProyectar: false };
+    return ESTADO_FALLECIDO;
   }
 
   const ordinariaAlcanzada = alcanzada(fechas.ordinaria, hoy);

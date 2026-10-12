@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
-import { ButtonModule } from 'primeng/button';
+
+import { ProyeccionComponent } from './proyeccion/proyeccion.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [ButtonModule],
+  imports: [ProyeccionComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })

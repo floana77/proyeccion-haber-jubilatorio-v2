@@ -1,0 +1,87 @@
+<main class="proyeccion p-3 md:p-5">
+  <section class="tarjeta surface-card border-round-xl shadow-2 p-4 md:p-6">
+    <h1 class="mt-0 mb-2">Tu proyección de haber jubilatorio</h1>
+    <p class="mt-0 mb-4 text-color-secondary">
+      Completamos tus datos automáticamente. Revisalos y generá tu proyección con un solo clic.
+    </p>
+
+    @let v = vista();
+    @if (v.tipo === 'cargando') {
+      <div class="flex justify-content-center p-4">
+        <p-progressSpinner ariaLabel="Cargando tus datos" styleClass="w-4rem h-4rem" />
+      </div>
+    } @else if (v.tipo === 'error') {
+      <div data-testid="error-carga" class="flex flex-column gap-3 align-items-start">
+        <p-message severity="error" text="No pudimos cargar tus datos" />
+        <p-button data-testid="reintentar" label="Reintentar" icon="pi pi-refresh" (onClick)="cargar()" />
+      </div>
+    } @else {
+      @let datos = v.datos;
+      @let chip = chipEstado[datos.afiliado.estadoMatricula];
+
+      <div class="flex flex-column gap-4">
+        <p-tag data-testid="chip-estado" [value]="chip.texto" [severity]="chip.severidad" [rounded]="true" />
+
+        @if (datos.estado.fallecido) {
+          <p-message
+            data-testid="alerta-fallecido"
+            severity="error"
+            text="No es posible realizar proyección para afiliados con estado matricular fallecido" />
+        }
+
+        @if (datos.estado.enCondicionesDeJubilarse) {
+          <p-message
+            data-testid="alerta-en-condiciones"
+            severity="warn"
+            text="Ud. se encuentra en condiciones de jubilarse" />
+        }
+
+        @if (datos.fechas; as fechas) {
+          <div>
+            <h2 class="text-lg mt-0 mb-3">Tipo de beneficio</h2>
+            <ul class="list-none p-0 m-0 flex flex-column gap-3">
+              <li data-testid="beneficio-ordinaria" class="border-1 surface-border border-round-lg p-3">
+                <div class="font-bold">Jubilación Ordinaria</div>
+                <div class="text-color-secondary">El beneficio completo, a partir de tu fecha mínima.</div>
+                <div class="mt-2">
+                  Fecha mínima:
+                  <strong data-testid="fecha-ordinaria">{{ parsearFecha(fechas.ordinaria) | date: 'dd/MM/yyyy' }}</strong>
+                </div>
+              </li>
+              <li data-testid="beneficio-parcial" class="border-1 surface-border border-round-lg p-3">
+                <div class="font-bold">Jubilación Parcial</div>
+                <div class="text-color-secondary">
+                  Combina actividad reducida con un haber proporcional. Su fecha mínima puede ser distinta a la de
+                  la jubilación ordinaria.
+                </div>
+                <div class="mt-2">
+                  Fecha mínima:
+                  <strong data-testid="fecha-parcial">{{ parsearFecha(fechas.parcial) | date: 'dd/MM/yyyy' }}</strong>
+                </div>
+              </li>
+            </ul>
+          </div>
+        }
+
+        <!-- La acción de Proyectar se agrega en el paso 3.2. -->
+        <p-button
+          data-testid="proyectar"
+          label="Proyectar"
+          icon="pi pi-download"
+          styleClass="w-full"
+          [disabled]="!datos.estado.puedeProyectar" />
+
+        @if (datos.estado.mostrarBotonTramite) {
+          <!-- [COMPLETAR: destino del trámite de jubilación] -->
+          <p-button
+            data-testid="iniciar-tramite"
+            label="Inicie su trámite de jubilación aquí"
+            icon="pi pi-arrow-right"
+            iconPos="right"
+            severity="secondary"
+            styleClass="w-full" />
+        }
+      </div>
+    }
+  </section>
+</main>
