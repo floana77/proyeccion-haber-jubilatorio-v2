@@ -1,1 +1,225 @@
-/* Estilos globales de la aplicación. */
+/*
+ * Estilos globales: colores y tipografías de la Opción A (docs/diseno) sobre el tema lara-light-green.
+ * El tema está en @layer primeng, así que estas reglas le ganan sin !important.
+ * Accesibilidad (RNF-04): texto base de 18 px, contraste AA y áreas táctiles de 44 px o más.
+ */
+
+:root {
+  --verde-oscuro: #183020;
+  --verde-oscuro-hover: #2a4a35;
+  --verde-fondo: #d8e3d3;
+  --verde-suave: #ecf1e8;
+  --borde: #cfd9cb;
+  --texto: #183020;
+  --texto-secundario: #4a5a4f;
+  --naranja-fondo: #f7ead9;
+  --naranja-borde: #d9a24a;
+  --naranja-texto: #6b3f0e;
+  --rojo-fondo: #fbe9e7;
+  --rojo-borde: #d4574a;
+  --rojo-texto: #8a1f14;
+  --foco: 0 0 0 3px #ffffff, 0 0 0 5px var(--verde-oscuro);
+  --area-tactil: 2.75rem;
+
+  --font-family: 'Work Sans', system-ui, sans-serif;
+  --primary-color: var(--verde-oscuro);
+  --primary-color-text: #ffffff;
+  --text-color: var(--texto);
+  --text-color-secondary: var(--texto-secundario);
+  --surface-border: var(--borde);
+  --highlight-bg: var(--verde-suave);
+  --highlight-text-color: var(--verde-oscuro);
+  --focus-ring: var(--foco);
+  --border-radius: 0.75rem;
+}
+
+/* Todo lo que está en rem (PrimeFlex y PrimeNG) escala con este tamaño. */
+html {
+  font-size: 18px;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font-family);
+  color: var(--texto);
+  background: var(--verde-fondo);
+  border-top: 4px solid var(--verde-oscuro);
+}
+
+h1 {
+  font-family: 'Lora', Georgia, serif;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--verde-oscuro);
+}
+
+/* Botones: 48 px de alto. */
+.p-button {
+  min-height: 2.75rem;
+  padding: 0.75rem 1.25rem;
+  font-family: var(--font-family);
+  font-size: 1rem;
+  font-weight: 700;
+  color: #ffffff;
+  background: var(--verde-oscuro);
+  border: 1px solid var(--verde-oscuro);
+  border-radius: 0.75rem;
+}
+
+/* Ícono junto al texto, como en el diseño. */
+.p-button .p-button-label {
+  flex: 0 0 auto;
+}
+
+.p-button:not(.p-button-icon-only) {
+  justify-content: center;
+}
+
+.p-button:not(:disabled):hover {
+  background: var(--verde-oscuro-hover);
+  border-color: var(--verde-oscuro-hover);
+}
+
+.p-button:focus-visible,
+.p-button:not(:disabled):focus {
+  box-shadow: var(--foco);
+}
+
+.p-button:disabled {
+  opacity: 1;
+  color: #66746a;
+  background: #eceee9;
+  border-color: var(--borde);
+}
+
+/* Botón del calendario: cuadrado de 44 px pegado al campo. */
+.p-datepicker-trigger.p-button {
+  width: var(--area-tactil);
+  min-width: var(--area-tactil);
+  padding: 0;
+  border-radius: 0 0.75rem 0.75rem 0;
+}
+
+/* Campo de fecha. */
+.p-inputtext {
+  min-height: var(--area-tactil);
+  font-family: var(--font-family);
+  font-size: 1rem;
+  color: var(--texto);
+  border: 1px solid #8a9a8e;
+  border-radius: 0.75rem;
+}
+
+.p-calendar-w-btn .p-inputtext {
+  border-radius: 0.75rem 0 0 0.75rem;
+}
+
+.p-inputtext:enabled:focus,
+.p-calendar:not(.p-calendar-disabled).p-focus > .p-inputtext {
+  border-color: var(--verde-oscuro);
+  box-shadow: var(--foco);
+}
+
+/* Calendario desplegado: días de 44 px. */
+.p-datepicker table td > span {
+  width: var(--area-tactil);
+  height: var(--area-tactil);
+}
+
+.p-datepicker table td > span.p-highlight {
+  color: #ffffff;
+  background: var(--verde-oscuro);
+}
+
+/* Radio de 24 px con borde visible sobre blanco. */
+.p-radiobutton,
+.p-radiobutton .p-radiobutton-box {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.p-radiobutton .p-radiobutton-box {
+  border-color: #66746a;
+}
+
+.p-radiobutton .p-radiobutton-box.p-highlight,
+.p-radiobutton .p-radiobutton-box.p-highlight:not(.p-disabled):hover {
+  border-color: var(--verde-oscuro);
+  background: #ffffff;
+}
+
+.p-radiobutton .p-radiobutton-box.p-highlight .p-radiobutton-icon {
+  width: 0.75rem;
+  height: 0.75rem;
+  background: var(--verde-oscuro);
+}
+
+.p-radiobutton .p-radiobutton-box.p-focus {
+  box-shadow: var(--foco);
+}
+
+/* Chip de estado de la matrícula. */
+.p-tag {
+  padding: 0.375rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.p-tag.p-tag-success {
+  color: #ffffff;
+  background: #3f6e52;
+}
+
+.p-tag.p-tag-warning {
+  color: var(--naranja-texto);
+  background: var(--naranja-fondo);
+}
+
+.p-tag.p-tag-secondary {
+  color: #2f3a32;
+  background: #e3e7e2;
+}
+
+/* Alertas en caja, como la de "en condiciones" del diseño. */
+.p-inline-message {
+  width: 100%;
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding: 1rem 1.25rem;
+  border-radius: 0.75rem;
+}
+
+.p-inline-message .p-inline-message-text {
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.p-inline-message .p-inline-message-icon,
+.p-inline-message .p-icon {
+  flex-shrink: 0;
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-top: 0.1rem;
+}
+
+.p-inline-message.p-inline-message-warn {
+  color: var(--naranja-texto);
+  background: var(--naranja-fondo);
+  border: 1px solid var(--naranja-borde);
+}
+
+.p-inline-message.p-inline-message-warn .p-inline-message-icon {
+  color: var(--naranja-texto);
+}
+
+.p-inline-message.p-inline-message-error {
+  color: var(--rojo-texto);
+  background: var(--rojo-fondo);
+  border: 1px solid var(--rojo-borde);
+}
+
+.p-inline-message.p-inline-message-error .p-inline-message-icon {
+  color: var(--rojo-texto);
+}

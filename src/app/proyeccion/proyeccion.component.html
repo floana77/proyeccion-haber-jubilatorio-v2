@@ -1,7 +1,7 @@
-<main class="proyeccion p-3 md:p-5">
-  <section class="tarjeta surface-card border-round-xl shadow-2 p-4 md:p-6">
-    <h1 class="mt-0 mb-2">Tu proyección de haber jubilatorio</h1>
-    <p class="mt-0 mb-4 text-color-secondary">
+<main class="proyeccion p-2 md:p-4">
+  <section class="tarjeta surface-card p-3 md:p-5">
+    <h1 class="mt-0 mb-3 md:mb-2">Tu proyección de haber jubilatorio</h1>
+    <p class="hidden md:block mt-0 mb-4 text-color-secondary">
       Completamos tus datos automáticamente. Revisalos y generá tu proyección con un solo clic.
     </p>
 
@@ -19,7 +19,7 @@
       @let datos = v.datos;
       @let chip = chipEstado[datos.afiliado.estadoMatricula];
 
-      <div class="flex flex-column gap-4">
+      <div class="flex flex-column gap-3 md:gap-4">
         <p-tag data-testid="chip-estado" [value]="chip.texto" [severity]="chip.severidad" [rounded]="true" />
 
         @if (datos.estado.fallecido) {
@@ -41,12 +41,12 @@
           @let bloqueado = !datos.estado.puedeProyectar;
 
           <fieldset class="border-none p-0 m-0">
-            <legend class="text-lg font-bold mb-3">Tipo de beneficio</legend>
-            <div class="flex flex-column gap-3">
+            <legend class="font-bold mb-2 md:mb-3">Tipo de beneficio</legend>
+            <div class="flex flex-column gap-2 md:gap-3">
               <label
                 data-testid="beneficio-ordinaria"
                 for="beneficio-ordinaria"
-                class="opcion flex gap-3 align-items-start border-1 surface-border border-round-lg p-3"
+                class="opcion flex gap-3 align-items-start border-1 surface-border border-round-lg p-2 md:p-3"
                 [class.opcion-elegida]="seleccionActual?.tipoBeneficio === 'ORDINARIA'"
                 [class.opcion-bloqueada]="bloqueado">
                 <p-radioButton
@@ -58,7 +58,7 @@
                   (ngModelChange)="elegirBeneficio($event)" />
                 <span>
                   <span class="block font-bold">Jubilación Ordinaria</span>
-                  <span class="block text-color-secondary">El beneficio completo, a partir de tu fecha mínima.</span>
+                  <span class="hidden md:block texto-ayuda text-color-secondary">El beneficio completo, a partir de tu fecha mínima.</span>
                   <span class="block mt-2">
                     Fecha mínima:
                     <strong data-testid="fecha-ordinaria">{{ parsearFecha(fechas.ordinaria) | date: 'dd/MM/yyyy' }}</strong>
@@ -68,7 +68,7 @@
               <label
                 data-testid="beneficio-parcial"
                 for="beneficio-parcial"
-                class="opcion flex gap-3 align-items-start border-1 surface-border border-round-lg p-3"
+                class="opcion flex gap-3 align-items-start border-1 surface-border border-round-lg p-2 md:p-3"
                 [class.opcion-elegida]="seleccionActual?.tipoBeneficio === 'PARCIAL'"
                 [class.opcion-bloqueada]="bloqueado">
                 <p-radioButton
@@ -80,7 +80,7 @@
                   (ngModelChange)="elegirBeneficio($event)" />
                 <span>
                   <span class="block font-bold">Jubilación Parcial</span>
-                  <span class="block text-color-secondary">
+                  <span class="hidden md:block texto-ayuda text-color-secondary">
                     Combina actividad reducida con un haber proporcional. Su fecha mínima puede ser distinta a la de
                     la jubilación ordinaria.
                   </span>
@@ -94,7 +94,7 @@
           </fieldset>
 
           <div class="flex flex-column gap-2">
-            <label for="fecha-proyeccion" class="text-lg font-bold">Fecha para tu proyección</label>
+            <label for="fecha-proyeccion" class="font-bold">Fecha para tu proyección</label>
             <!-- RF-04: solo desde el calendario, sin escribir, y sin días anteriores a la mínima. -->
             <p-calendar
               data-testid="fecha-proyeccion"
@@ -106,7 +106,7 @@
               [minDate]="fechaMinimaElegida()"
               [ngModel]="fechaElegida()"
               (ngModelChange)="elegirFecha($event)" />
-            <small id="fecha-proyeccion-ayuda" data-testid="ayuda-fecha" class="text-color-secondary">
+            <small id="fecha-proyeccion-ayuda" data-testid="ayuda-fecha" class="texto-ayuda text-color-secondary">
               No puede ser anterior al {{ fechaMinimaElegida() | date: 'dd/MM/yyyy' }} para el beneficio elegido.
             </small>
           </div>

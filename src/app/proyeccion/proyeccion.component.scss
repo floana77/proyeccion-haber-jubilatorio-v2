@@ -1,20 +1,39 @@
-/* Estilos mínimos; el diseño de la Opción A se aplica en el paso 4.1. */
+/* Diseño de la Opción A (docs/diseno). Los colores y los componentes de PrimeNG están en styles.scss. */
 .tarjeta {
   max-width: 48rem;
   margin: 0 auto;
+  border-radius: 1rem;
+  box-shadow: 0 1px 3px rgba(24, 48, 32, 0.12);
+}
+
+/* En celular el título y los espacios se achican para que Proyectar entre sin scroll (RNF-03). */
+h1 {
+  font-size: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  h1 {
+    font-size: 2rem;
+  }
 }
 
 /* Toda la tarjeta de la opción se puede tocar para elegir el beneficio. */
 .opcion {
   cursor: pointer;
+  background: #ffffff;
 }
 
 .opcion-elegida {
-  border-color: var(--primary-color) !important;
-  background: var(--highlight-bg);
+  border-color: var(--verde-oscuro) !important;
+  background: var(--verde-suave);
 }
 
+/* Sin opacidad, para no bajar el contraste del texto (RNF-04). */
 .opcion-bloqueada {
   cursor: default;
-  opacity: 0.7;
+  background: #f4f6f3;
+}
+
+.texto-ayuda {
+  font-size: 0.889rem;
 }
