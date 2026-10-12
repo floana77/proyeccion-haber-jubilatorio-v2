@@ -11,6 +11,7 @@ Módulo web de CPBA para que el afiliado genere la proyección de su haber jubil
 |---|---|
 | [PRD-001](docs/PRD-001-proyeccion-haber-jubilatorio.md) | Requerimientos, criterios de aceptación y objetivos |
 | [proyeccion-haber-jubilatorio.feature](docs/proyeccion-haber-jubilatorio.feature) | Escenarios en Gherkin |
+| [api.md](docs/api.md) | Contrato de la API simulada |
 | [avance.md](docs/avance.md) | Estado, decisiones y pendientes |
 | [docs/diseno/](docs/diseno/) | Diseño de referencia (Opción A) |
 
