@@ -5,7 +5,7 @@ import { SolicitudProyeccion } from '../proyeccion/proyeccion.service';
 import { MockRuta } from './mock.model';
 
 /** Demora simulada del servicio de proyección, en milisegundos. */
-const DEMORA_MS = 800;
+export const DEMORA_PROYECCION_MS = 800;
 /** Demora del escenario lento, para ver el indicador de carga (AC-17). */
 export const DEMORA_LENTA_MS = 3_000;
 
@@ -80,7 +80,7 @@ export const MOCK_RUTAS_PROYECCION: MockRuta[] = [
       switch (escenario) {
         // AC-18: el servicio devuelve un error.
         case 'proyeccion-error':
-          return timer(DEMORA_MS).pipe(
+          return timer(DEMORA_PROYECCION_MS).pipe(
             switchMap(() =>
               throwError(() => new HttpErrorResponse({ status: 500, statusText: 'Error', url: req.url }))
             )
@@ -92,7 +92,7 @@ export const MOCK_RUTAS_PROYECCION: MockRuta[] = [
         case 'proyeccion-lenta':
           return responderPdf(req).pipe(delay(DEMORA_LENTA_MS));
         default:
-          return responderPdf(req).pipe(delay(DEMORA_MS));
+          return responderPdf(req).pipe(delay(DEMORA_PROYECCION_MS));
       }
     }
   }

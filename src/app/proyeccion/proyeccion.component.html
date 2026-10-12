@@ -112,13 +112,21 @@
           </div>
         }
 
-        <!-- La acción de Proyectar se agrega en el paso 3.2. -->
         <p-button
           data-testid="proyectar"
           label="Proyectar"
           icon="pi pi-download"
           styleClass="w-full"
-          [disabled]="!datos.estado.puedeProyectar" />
+          [loading]="proyectando()"
+          [disabled]="!datos.estado.puedeProyectar || proyectando()"
+          (onClick)="proyectar()" />
+
+        @if (errorProyeccion()) {
+          <p-message
+            data-testid="error-proyeccion"
+            severity="error"
+            text="No pudimos generar su proyección. Intente nuevamente." />
+        }
 
         @if (datos.estado.mostrarBotonTramite) {
           <!-- [COMPLETAR: destino del trámite de jubilación] -->

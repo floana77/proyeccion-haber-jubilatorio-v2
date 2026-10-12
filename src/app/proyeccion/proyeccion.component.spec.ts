@@ -9,7 +9,10 @@ import { AfiliadoService } from '../afiliado/afiliado.service';
 import { fechaRelativa } from '../mocks/afiliado.mock';
 import { MOCK_RUTAS } from '../mocks/mock-rutas';
 import { crearMockInterceptor } from '../mocks/mock.interceptor';
+import { DEMORA_LENTA_MS, DEMORA_PROYECCION_MS } from '../mocks/proyeccion.mock';
 import { ProyeccionComponent } from './proyeccion.component';
+import { ProyeccionService, TIEMPO_MAXIMO_PROYECCION_MS } from './proyeccion.service';
+import { PestanaPdf, VisorPdfService } from './visor-pdf.service';
 
 /** Lo que tardan las dos llamadas encadenadas del mock (300 ms cada una). */
 const DEMORA_CARGA_MS = 600;
@@ -79,14 +82,24 @@ class Pantalla {
 
 describe('ProyeccionComponent con el interceptor de mocks', () => {
   let servicio: AfiliadoService;
+  let proyeccionService: ProyeccionService;
+  let pestana: jasmine.SpyObj<PestanaPdf>;
+  let visorPdf: jasmine.SpyObj<VisorPdfService>;
 
   function ingresar(escenario: string): Pantalla {
+    pestana = jasmine.createSpyObj<PestanaPdf>('pestana', ['mostrar', 'cerrar']);
+    visorPdf = jasmine.createSpyObj<VisorPdfService>('visorPdf', { abrirEnEspera: pestana });
     TestBed.configureTestingModule({
       imports: [ProyeccionComponent],
-      providers: [provideHttpClient(withInterceptors([crearMockInterceptor(MOCK_RUTAS, () => escenario)]))]
+      providers: [
+        provideHttpClient(withInterceptors([crearMockInterceptor(MOCK_RUTAS, () => escenario)])),
+        { provide: VisorPdfService, useValue: visorPdf }
+      ]
     });
     servicio = TestBed.inject(AfiliadoService);
     spyOn(servicio, 'obtenerFechasMinimas').and.callThrough();
+    proyeccionService = TestBed.inject(ProyeccionService);
+    spyOn(proyeccionService, 'proyectar').and.callThrough();
 
     const fixture = TestBed.createComponent(ProyeccionComponent);
     fixture.detectChanges();
@@ -234,6 +247,111 @@ describe('ProyeccionComponent con el interceptor de mocks', () => {
 
     it('el fallecido no ve el calendario', fakeAsync(() => {
       expect(ingresar('fallecido').existe('fecha-proyeccion')).toBeFalse();
+    }));
+  });
+
+  describe('botón Proyectar', () => {
+    function proyectar(pantalla: Pantalla): void {
+      pantalla.boton('proyectar').click();
+      pantalla.actualizar();
+    }
+
+    it('AC-15: abre el PDF en una pestaña nueva con el legajo, el beneficio y la fecha elegidos', fakeAsync(() => {
+      const pantalla = ingresar('normal');
+      pantalla.elegirOpcion('beneficio-ordinaria');
+      pantalla.elegirFecha(fechaDesde({ anios: 6 }));
+
+      proyectar(pantalla);
+      expect(visorPdf.abrirEnEspera).toHaveBeenCalledTimes(1);
+      tick(DEMORA_PROYECCION_MS);
+      pantalla.actualizar();
+
+      expect(proyeccionService.proyectar).toHaveBeenCalledOnceWith('100234', {
+        tipoBeneficio: 'ORDINARIA', fecha: fechaRelativa({ anios: 6 })
+      });
+      expect(pestana.mostrar).toHaveBeenCalledOnceWith(jasmine.any(Blob));
+      expect(pestana.mostrar.calls.mostRecent().args[0].type).toBe('application/pdf');
+      expect(pantalla.boton('proyectar').disabled).toBeFalse();
+    }));
+
+    it('con los valores propuestos genera el PDF en 1 clic (RNF-02)', fakeAsync(() => {
+      const pantalla = ingresar('normal');
+
+      proyectar(pantalla);
+      tick(DEMORA_PROYECCION_MS);
+
+      expect(proyeccionService.proyectar).toHaveBeenCalledOnceWith('100234', {
+        tipoBeneficio: 'PARCIAL', fecha: fechaRelativa({ anios: 1 })
+      });
+      expect(pestana.mostrar).toHaveBeenCalledTimes(1);
+    }));
+
+    it('AC-17: mientras espera muestra la carga, deshabilita Proyectar y no envía un segundo pedido', fakeAsync(() => {
+      const pantalla = ingresar('proyeccion-lenta');
+
+      proyectar(pantalla);
+      expect(pantalla.boton('proyectar').disabled).toBeTrue();
+      expect(pantalla.boton('proyectar').querySelector('.p-button-loading-icon')).not.toBeNull();
+
+      proyectar(pantalla);
+      expect(proyeccionService.proyectar).toHaveBeenCalledTimes(1);
+      expect(visorPdf.abrirEnEspera).toHaveBeenCalledTimes(1);
+
+      tick(DEMORA_LENTA_MS);
+      pantalla.actualizar();
+      expect(pantalla.boton('proyectar').disabled).toBeFalse();
+      expect(pestana.mostrar).toHaveBeenCalledTimes(1);
+    }));
+
+    it('AC-18: si el servicio da error, muestra el mensaje, cierra la pestaña y habilita Proyectar', fakeAsync(() => {
+      const pantalla = ingresar('proyeccion-error');
+
+      proyectar(pantalla);
+      tick(DEMORA_PROYECCION_MS);
+      pantalla.actualizar();
+
+      expect(pantalla.texto('error-proyeccion')).toContain('No pudimos generar su proyección. Intente nuevamente.');
+      expect(pestana.cerrar).toHaveBeenCalled();
+      expect(pestana.mostrar).not.toHaveBeenCalled();
+      expect(pantalla.boton('proyectar').disabled).toBeFalse();
+    }));
+
+    it('AC-19: si el servicio no responde, a los 10 s muestra el mensaje y habilita Proyectar', fakeAsync(() => {
+      const pantalla = ingresar('proyeccion-sin-respuesta');
+
+      proyectar(pantalla);
+      tick(TIEMPO_MAXIMO_PROYECCION_MS - 1);
+      pantalla.actualizar();
+      expect(pantalla.existe('error-proyeccion')).toBeFalse();
+      expect(pantalla.boton('proyectar').disabled).toBeTrue();
+
+      tick(1);
+      pantalla.actualizar();
+      expect(pantalla.existe('error-proyeccion')).toBeTrue();
+      expect(pestana.cerrar).toHaveBeenCalled();
+      expect(pantalla.boton('proyectar').disabled).toBeFalse();
+    }));
+
+    it('al reintentar oculta el mensaje de error', fakeAsync(() => {
+      const pantalla = ingresar('proyeccion-error');
+      proyectar(pantalla);
+      tick(DEMORA_PROYECCION_MS);
+      pantalla.actualizar();
+
+      proyectar(pantalla);
+
+      expect(pantalla.existe('error-proyeccion')).toBeFalse();
+      expect(proyeccionService.proyectar).toHaveBeenCalledTimes(2);
+      tick(DEMORA_PROYECCION_MS);
+    }));
+
+    it('en condiciones de jubilarse no permite proyectar', fakeAsync(() => {
+      const pantalla = ingresar('en-condiciones-hoy');
+
+      proyectar(pantalla);
+
+      expect(visorPdf.abrirEnEspera).not.toHaveBeenCalled();
+      expect(proyeccionService.proyectar).not.toHaveBeenCalled();
     }));
   });
 });

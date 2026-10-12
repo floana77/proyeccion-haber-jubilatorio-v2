@@ -13,7 +13,9 @@ import { Afiliado, EstadoMatricula, FechasMinimas } from '../afiliado/afiliado.m
 import { AfiliadoService } from '../afiliado/afiliado.service';
 import { ESTADO_FALLECIDO, EstadoAfiliado, evaluarEstadoAfiliado } from '../afiliado/estado-afiliado';
 import { formatearFecha, parsearFecha } from '../shared/fechas';
+import { ProyeccionService } from './proyeccion.service';
 import { cambiarBeneficio, fechaMinima, preseleccionar, SeleccionBeneficio, TipoBeneficio } from './seleccion-beneficio';
+import { VisorPdfService } from './visor-pdf.service';
 
 /** Datos de la pantalla. Las fechas no se piden si el afiliado es fallecido (RF-05). */
 interface DatosProyeccion {
@@ -55,10 +57,16 @@ export const CHIP_ESTADO: Record<EstadoMatricula, { texto: string; severidad: Se
 })
 export class ProyeccionComponent implements OnInit {
   private readonly afiliadoService = inject(AfiliadoService);
+  private readonly proyeccionService = inject(ProyeccionService);
+  private readonly visorPdf = inject(VisorPdfService);
 
   protected readonly vista = signal<Vista>({ tipo: 'cargando' });
   /** Beneficio y fecha elegidos; null mientras no hay fechas mínimas. */
   protected readonly seleccion = signal<SeleccionBeneficio | null>(null);
+  /** RF-09: true mientras se espera el PDF; deshabilita Proyectar. */
+  protected readonly proyectando = signal(false);
+  /** RF-10: muestra el error de la última proyección. */
+  protected readonly errorProyeccion = signal(false);
 
   /** Fechas mínimas cargadas, o null si todavía no están o el afiliado es fallecido. */
   private readonly fechas = computed(() => {
@@ -118,6 +126,31 @@ export class ProyeccionComponent implements OnInit {
     if (seleccion && fecha) {
       this.seleccion.set({ ...seleccion, fecha: formatearFecha(fecha) });
     }
+  }
+
+  /** RF-06: genera el PDF con el beneficio y la fecha elegidos. */
+  protected proyectar(): void {
+    const vista = this.vista();
+    const seleccion = this.seleccion();
+    // AC-17: un segundo clic mientras se espera no envía otra solicitud.
+    if (this.proyectando() || vista.tipo !== 'lista' || !vista.datos.estado.puedeProyectar || !seleccion) {
+      return;
+    }
+
+    const pestana = this.visorPdf.abrirEnEspera();
+    this.proyectando.set(true);
+    this.errorProyeccion.set(false);
+    this.proyeccionService.proyectar(vista.datos.afiliado.legajo, seleccion).subscribe({
+      next: pdf => {
+        pestana.mostrar(pdf);
+        this.proyectando.set(false);
+      },
+      error: () => {
+        pestana.cerrar();
+        this.errorProyeccion.set(true);
+        this.proyectando.set(false);
+      }
+    });
   }
 
   private completarDatos(afiliado: Afiliado): Observable<DatosProyeccion> {
