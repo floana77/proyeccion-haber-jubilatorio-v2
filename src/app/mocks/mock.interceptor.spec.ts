@@ -3,7 +3,8 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 
-import { crearMockInterceptor, MockRuta } from './mock.interceptor';
+import { crearMockInterceptor } from './mock.interceptor';
+import { MockRuta } from './mock.model';
 
 describe('crearMockInterceptor', () => {
   const rutaAfiliado: MockRuta = {
