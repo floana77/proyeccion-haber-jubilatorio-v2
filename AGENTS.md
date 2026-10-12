@@ -2,7 +2,7 @@
 
 ## Propósito
 Frontend nuevo del módulo de proyección de haber jubilatorio de CPBA (cpbaonline.com.ar).
-Consume los servicios backend actuales y usa la sesión del sitio actual. Requerimientos: `PRD-001-proyeccion-haber-jubilatorio.md`.
+Consume los servicios backend actuales y usa la sesión del sitio actual. Requerimientos: `docs/PRD-001-proyeccion-haber-jubilatorio.md`.
 
 ## Stack
 - Angular 18.2, TypeScript ~5.5, RxJS ~7.8, zone.js ~0.14. Node ^18.19.1, ^20.11.1 o ^22 (lo exige Angular 18).
