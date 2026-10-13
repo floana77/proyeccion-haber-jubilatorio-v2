@@ -1,4 +1,4 @@
-# Guion de la demo
+# Guión de la demo
 
 Duración estimada: 10 minutos. Todo corre con datos simulados.
 
