@@ -67,9 +67,13 @@ h1 {
   border-radius: 0.75rem;
 }
 
-/* Ícono junto al texto, como en el diseño. */
+/* Ícono junto al texto, como en el diseño. En pantallas angostas el texto
+   baja de línea en vez de cortarse (RNF-03, desde 360 px). */
 .p-button .p-button-label {
-  flex: 0 0 auto;
+  flex: 0 1 auto;
+  min-width: 0;
+  white-space: normal;
+  text-align: center;
 }
 
 .p-button:not(.p-button-icon-only) {
