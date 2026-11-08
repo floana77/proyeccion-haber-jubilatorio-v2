@@ -44,6 +44,10 @@ class Pantalla {
     return this.raiz.querySelector(`[data-testid="${testId}"]`)?.textContent?.trim() ?? '';
   }
 
+  elemento(testId: string): HTMLElement {
+    return this.raiz.querySelector(`[data-testid="${testId}"]`) as HTMLElement;
+  }
+
   boton(testId: string): HTMLButtonElement {
     return this.raiz.querySelector(`[data-testid="${testId}"] button`) as HTMLButtonElement;
   }
@@ -122,6 +126,13 @@ describe('ProyeccionComponent con el interceptor de mocks', () => {
     expect(pantalla.texto('alerta-en-condiciones')).toContain('Ud. se encuentra en condiciones de jubilarse');
     expect(pantalla.texto('iniciar-tramite')).toContain('Inicie su trámite de jubilación aquí');
     expect(pantalla.boton('proyectar').disabled).toBeTrue();
+  }));
+
+  it('el trámite abre la URL configurada en la misma pantalla', fakeAsync(() => {
+    const enlace = ingresar('en-condiciones-hoy').elemento('iniciar-tramite') as HTMLAnchorElement;
+
+    expect(enlace.getAttribute('href')).toBe(environment.urlTramite);
+    expect(enlace.target).toBe('');
   }));
 
   it('AC-04: con Parcial hoy y Ordinaria mañana muestra el trámite sin la alerta', fakeAsync(() => {

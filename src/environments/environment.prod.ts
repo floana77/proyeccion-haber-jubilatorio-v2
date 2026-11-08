@@ -4,5 +4,7 @@ export const environment = {
   production: true,
   // [COMPLETAR: URL de los servicios backend actuales de CPBA]
   apiUrl: '/api',
-  usarMocks: false
+  usarMocks: false,
+  // [COMPLETAR: URL del trámite de jubilación en producción]
+  urlTramite: ''
 };

@@ -129,14 +129,15 @@
         }
 
         @if (datos.estado.mostrarBotonTramite) {
-          <!-- [COMPLETAR: destino del trámite de jubilación] -->
-          <p-button
+          <!-- Es un enlace porque navega: abre el trámite en la misma pantalla. -->
+          <a
+            pButton
             data-testid="iniciar-tramite"
             label="Inicie su trámite de jubilación aquí"
             icon="pi pi-arrow-right"
             iconPos="right"
-            severity="secondary"
-            styleClass="w-full" />
+            class="p-button-secondary w-full no-underline"
+            [href]="urlTramite"></a>
         }
       </div>
     }

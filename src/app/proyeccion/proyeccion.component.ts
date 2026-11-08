@@ -9,6 +9,7 @@ import { RadioButtonModule } from 'primeng/radiobutton';
 import { TagModule } from 'primeng/tag';
 import { map, Observable, of, switchMap } from 'rxjs';
 
+import { environment } from '../../environments/environment';
 import { Afiliado, EstadoMatricula, FechasMinimas } from '../afiliado/afiliado.model';
 import { AfiliadoService } from '../afiliado/afiliado.service';
 import { ESTADO_FALLECIDO, EstadoAfiliado, evaluarEstadoAfiliado } from '../afiliado/estado-afiliado';
@@ -59,6 +60,9 @@ export class ProyeccionComponent implements OnInit {
   private readonly afiliadoService = inject(AfiliadoService);
   private readonly proyeccionService = inject(ProyeccionService);
   private readonly visorPdf = inject(VisorPdfService);
+
+  /** Destino de "Inicie su trámite de jubilación aquí". */
+  protected readonly urlTramite = environment.urlTramite;
 
   protected readonly vista = signal<Vista>({ tipo: 'cargando' });
   /** Beneficio y fecha elegidos; null mientras no hay fechas mínimas. */

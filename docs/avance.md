@@ -55,7 +55,7 @@ Fuera del plan hubo commits de documentación (PRD, README, contrato de la API),
 | Pendiente | Qué falta |
 |---|---|
 | URL del backend de producción | Completar `apiUrl` en `src/environments/environment.prod.ts` (marcado `[COMPLETAR]`) |
-| Destino del botón "Inicie su trámite de jubilación aquí" | URL del trámite; por ahora el botón no navega |
+| Destino del botón "Inicie su trámite de jubilación aquí" en producción | En dev y QA ya navega a la URL de calidad. Falta completar `urlTramite` en `src/environments/environment.prod.ts` (marcado `[COMPLETAR]`): vacía, el botón recarga la misma pantalla |
 | AC-16 | Probar en dispositivos reales: Chrome en Android y Safari en iPhone |
 | AC-15 completo | Comparar el PDF con el del sitio actual, con el backend real |
 | Tiempo máximo de 10 s (RF-10) | El PRD lo marca "a validar". Está en `TIEMPO_MAXIMO_PROYECCION_MS` |
